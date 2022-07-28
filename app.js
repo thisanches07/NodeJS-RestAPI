@@ -4,12 +4,37 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const feedRoutes = require("./routes/feed");
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
+const multer = require("multer");
 
 const app = express();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./images");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname
+    );
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 //utilizado para capturar conteúdo JSON que chega para a API
 app.use(bodyParser.json());
+app.use(multer({ storage: fileStorage, fileFilter }).single("image"));
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 //Middleware criado para evitar erro de CORS
