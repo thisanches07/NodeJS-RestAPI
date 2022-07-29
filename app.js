@@ -70,8 +70,6 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://user123:pass123@cluster0.pjeyjhi.mongodb.net/?retryWrites=true&w=majority"
-  )
+  .connect("mongodb://user123:pass123@localhost:27017/admin")
   .then((result) => app.listen(8080))
   .catch((err) => console.log(err));
