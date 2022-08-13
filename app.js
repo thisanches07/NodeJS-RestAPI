@@ -3,10 +3,12 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const feedRoutes = require("./routes/feed");
-const authRoutes = require("./routes/auth");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const { graphqlHTTP } = require("express-graphql");
+
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolvers");
 
 const app = express();
 
@@ -54,9 +56,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolver,
+  })
+);
+
 //capturando rotas de feed
-app.use("/feed", feedRoutes);
-app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -70,6 +78,9 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect("mongodb://user123:pass123@localhost:27017/admin")
+  .connect(
+    "mongodb+srv://user123:pass123@cluster0.pjeyjhi.mongodb.net/?retryWrites=true&w=majority"
+    //mongodb://user123:pass123@localhost:27017/admin --> docker connection
+  )
   .then((result) => app.listen(8080))
   .catch((err) => console.log(err));
