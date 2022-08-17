@@ -7,13 +7,13 @@ module.exports = {
   createUser: async function ({ userInput }, req) {
     //   const email = args.userInput.email;
     const errors = [];
-    if (validator.isEmail(userInput.email)) {
+    if (!validator.isEmail(userInput.email)) {
       errors.push({ message: "E-mail is invalid!" });
     }
 
     if (
       validator.isEmpty(userInput.password) ||
-      validator.isLength(userInput.password, { min: 5 })
+      !validator.isLength(userInput.password, { min: 5 })
     ) {
       errors.push({ message: "Password too short!" });
     }

@@ -48,11 +48,14 @@ app.use((req, res, next) => {
   //especifica o método ou métodos permitidos
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE"
+    "OPTIONS,GET, POST, PUT, PATCH, DELETE"
   );
 
   //indicar quais cabeçalhos HTTP podem ser utilizados durante a requisição
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
@@ -62,7 +65,7 @@ app.use(
     schema: graphqlSchema,
     rootValue: graphqlResolver,
     graphiql: true,
-    formatError(err) {
+    customFormatErrorFn(err) {
       if (!err.originalError) {
         return err;
       }
