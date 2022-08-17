@@ -61,6 +61,16 @@ app.use(
   graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
+    graphiql: true,
+    formatError(err) {
+      if (!err.originalError) {
+        return err;
+      }
+      const data = err.originalError.data;
+      const message = err.message || "An error occurred.";
+      const code = err.originalError.code || 500;
+      return { message: message, status: code, data: data };
+    },
   })
 );
 
@@ -79,7 +89,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://user123:pass123@cluster0.pjeyjhi.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://user123:pass123@cluster0.pjeyjhi.mongodb.net/messages?retryWrites=true"
     //mongodb://user123:pass123@localhost:27017/admin --> docker connection
   )
   .then((result) => app.listen(8080))
